@@ -151,10 +151,7 @@ def client(args):
             print("DERNIER")
         hexa2.append(data)
 
-        if random.choice([True,False]) and len(hexa) > int(args.byte) :
-            socket.send("k".encode('utf-8'))
-        else :
-            socket.send(data.encode('utf8'))
+        socket.send(data.encode('utf8'))
     
     file = open('hexa2.txt','w')
     file.write("\n".join(hexa2))
