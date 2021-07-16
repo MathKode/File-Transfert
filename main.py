@@ -3,7 +3,7 @@ import argparse
 parser = argparse.ArgumentParser(description='This code has been created to send a file between two PC on the local net')
 
 parser.add_argument('-r','--role',metavar="[S]erver or [C]lient",type=str,help='The role of the machine where the code is running')
-parser.add_argument('-s','--server',metavar='IP',type=str,help="The IP of the server machine")
+parser.add_argument('-i','--server',metavar='IP',type=str,help="The IP of the server machine")
 parser.add_argument('-f','--file',metavar='name',default=None,type=str,help="The name of the file (only if the role is client)")
 parser.add_argument('-p','--port',type=int,default=5746,help="The Port of the server (optionnal)")
 parser.add_argument('-b','--byte',type=int,default=8500,help="The number of byte send in one request (max 130020 but with bug, so we advice a max at 10000)")
@@ -22,6 +22,16 @@ def server(args):
     client, addr = socket.accept()
     print("Connection set up with :",addr)
 
+    #Reception de la variable byte
+    byte = ""
+    while True: # Ex : 234 -> 2 puis 3 puis 4 puis S (pour signifier l'arrêt du code)
+        reception = client.recv(1).decode('utf-8')
+        if not reception or reception == 'S':
+            break
+        else :
+            byte += reception
+    print("The variable byte is :",byte)
+
     #Reception de la taille du fichier chiffre après chiffre
     size = ""
     while True: # Ex : 234 -> 2 puis 3 puis 4 puis S (pour signifier l'arrêt du code)
@@ -32,7 +42,7 @@ def server(args):
             size += reception
     print("The size of the file is :",size)
 
-    number_send = int(size)/int(args.byte)
+    number_send = int(size)/int(byte)
     if str(number_send).split('.')[-1][0] != "0":
         number_send = int(str(number_send).split('.')[0]) + 1
     else :
@@ -45,7 +55,9 @@ def server(args):
         print('Transfert :',int(i*100/int(number_send)),"%",end='\r')
         if not reception :
             print('ERROR : The client has bugged')
-            break
+            client.close()
+            socket.close()
+            exit(0)
         else :
             file += reception
     print("Transfert END    ")
@@ -84,6 +96,9 @@ def client(args):
     content = file.read()
     file.close()
     hexa = str(binascii.hexlify(content))[2:-1]
+    byte = str(args.byte) + "S"
+    for i in byte :
+        socket.send(i.encode('utf8'))
     print('File size :',len(hexa))
     size = str(len(hexa)) + "S"
     for i in size :
