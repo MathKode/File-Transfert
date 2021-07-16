@@ -71,18 +71,23 @@ def server(args):
             er.append(i)
     print("Transfert END                             ")
     print("Récupération des données (erreus)")
+    
     print(er)
+    
     #Récupération des lignes mals envoyés (erreurs)
     for i in er:
         print(i)
         find = True
         while find :
-            client.send(str(i).encode("utf-8"))
+            for j in str(i):
+                client.send(str(j).encode("utf-8"))
+            client.send("S".encode("utf-8"))
             reception = client.recv(int(byte)).decode('utf-8')
             if len(reception) == int(byte):
                 file[int(i)] = reception
                 find = False
                 #print("Erreur Save :",i)
+    print('Envoi S')
     client.send("S".encode('utf-8'))
 
     fil = open('file.txt','w')
@@ -159,8 +164,15 @@ def client(args):
     file.close()
     #Err
     while True:
-        ligne = socket.recv(100000).decode('utf-8')
-        if ligne == "S":
+        ligne = ""
+        s1 = True
+        while s1: # Ex : 234 -> 2 puis 3 puis 4 puis S (pour signifier l'arrêt du code)
+            reception = socket.recv(1).decode('utf-8')
+            if not reception or reception == 'S':
+                s1 = False
+            else :
+                ligne += reception
+        if ligne == "":
             break
         b = int(ligne)
         print(b)
