@@ -74,6 +74,7 @@ def server(args):
     print(er)
     #Récupération des lignes mals envoyés (erreurs)
     for i in er:
+        print(i)
         find = True
         while find :
             client.send(str(i).encode("utf-8"))
@@ -150,7 +151,7 @@ def client(args):
             data = hexa
             print("DERNIER")
         hexa2.append(data)
-
+        
         socket.send(data.encode('utf8'))
     
     file = open('hexa2.txt','w')
@@ -162,6 +163,7 @@ def client(args):
         if ligne == "S":
             break
         b = int(ligne)
+        print(b)
         socket.send(str(hexa2[b]).encode('utf-8'))
 
     #Name
