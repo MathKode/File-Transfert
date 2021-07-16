@@ -53,9 +53,10 @@ def server(args):
         number_send = int(str(number_send).split('.')[0])
     print("Le fichier sera reçu en :",number_send,"étape(s)")
 
-    file = ""
+    file = []
+    er = []
     for i in range(number_send):
-        reception = client.recv(int(args.byte)).decode('utf-8') # 131020 is the max of letter (with the encodage...) because 1048576 bytes is the max of bytes
+        reception = client.recv(int(byte)).decode('utf-8') # 131020 is the max of letter (with the encodage...) because 1048576 bytes is the max of bytes
         print('Transfert :',int(i*100/int(number_send)),"% ",progress_bar(14,"■","□",int(i*100/int(number_send))),end='\r')
         if not reception :
             print('ERROR : The client has bugged')
@@ -63,9 +64,26 @@ def server(args):
             socket.close()
             exit(0)
         else :
-            file += reception
-    print("Transfert END    ")
+            file.append(reception)
+        #Gestion ERREUR
+        if len(reception) != int(byte) and i != number_send-1:
+            print("PERTE DATA at ligne :",i,"AVEC UNE RECEPTION DE :",len(reception),len(reception) != byte)
+            er.append(i)
+    print("Transfert END                             ")
+    print("Récupération des données (erreus)")
+    
+    #Récupération des lignes mals envoyés (erreurs)
+    for i in er:
+        find = True
+        while find :
+            client.send(i)
+            reception = client.recv(int(byte)).decode('utf-8')
+            if len(reception) == int(byte):
+                file[int(i)] = reception
+                find = False
+    client.send("S".encode('utf-8'))
 
+    #Récupération du nom
     name = ""
     while True: 
         reception = client.recv(1).decode('utf-8')
@@ -82,7 +100,7 @@ def server(args):
         name = str("VR2_" +name)
     else :
         print('This name file doesn t exist')
-    hexa = binascii.unhexlify(file)
+    hexa = binascii.unhexlify("".join(file))
     file = open(name,'wb')
     file.write(hexa)
     file.close()
@@ -116,6 +134,7 @@ def client(args):
         number_send = int(str(number_send).split('.')[0])
     print("Le fichier sera envoyé en :",number_send,"étape")
 
+    hexa2 = []
     for i in range(number_send):
         print('Transfert :',int(i*100/int(number_send)),"% ",progress_bar(14,"■","□",int(i*100/int(number_send))),end='\r')
         if len(hexa) > int(args.byte) :
@@ -124,8 +143,17 @@ def client(args):
         else :
             data = hexa
             print("DERNIER")
+        hexa2.append(data)
         socket.send(data.encode('utf8'))
-        
+    
+    #Err
+    while True:
+        ligne = socket.recv(100000).decode('utf-8')
+        if ligne == "S":
+            break
+        socket.send(hexa2[ligne].encode('utf-8'))
+
+    #Name
     print('Name is :',str(args.file))
     for i in str(args.file):
         socket.send(i.encode('utf8'))
