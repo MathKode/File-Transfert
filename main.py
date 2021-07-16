@@ -4,8 +4,9 @@ parser = argparse.ArgumentParser(description='This code has been created to send
 
 parser.add_argument('-r','--role',metavar="[S]erver or [C]lient",type=str,help='The role of the machine where the code is running')
 parser.add_argument('-s','--server',metavar='IP',type=str,help="The IP of the server machine")
-parser.add_argument('-f','--file',metavar='name',default=None,type=str,help="The name of the file")
+parser.add_argument('-f','--file',metavar='name',default=None,type=str,help="The name of the file (only if the role is client)")
 parser.add_argument('-p','--port',type=int,default=5746,help="The Port of the server (optionnal)")
+parser.add_argument('-b','--byte',type=int,default=8500,help="The number of byte send in one request (max 130020 but with bug, so we advice a max at 10000)")
 
 args = parser.parse_args()
 
@@ -31,10 +32,17 @@ def server(args):
             size += reception
     print("The size of the file is :",size)
 
+    number_send = int(size)/int(args.byte)
+    if str(number_send).split('.')[-1][0] != "0":
+        number_send = int(str(number_send).split('.')[0]) + 1
+    else :
+        number_send = int(str(number_send).split('.')[0])
+    print("Le fichier sera reçu en :",number_send,"étape(s)")
+
     file = ""
-    for i in range(int(size)):
-        reception = client.recv(1).decode('utf-8')
-        print('Transfert :',int(i*100/int(size)),"%",end='\r')
+    for i in range(number_send):
+        reception = client.recv(int(args.byte)).decode('utf-8') # 131020 is the max of letter (with the encodage...) because 1048576 bytes is the max of bytes
+        print('Transfert :',int(i*100/int(number_send)),"%",end='\r')
         if not reception :
             print('ERROR : The client has bugged')
             break
@@ -49,8 +57,9 @@ def server(args):
             break
         else :
             name += reception
+    
     print("The name of the file is :",name)
-
+    
     if name in os.listdir():
         print("File nammed like this exist to the reception")
         print("Rename :",name,"->",str("VR2_" +name))
@@ -80,11 +89,24 @@ def client(args):
     for i in size :
         socket.send(i.encode('utf8'))
     size = size[:-1]
-    t = 0
-    for i in hexa:
-        print('Transfert :',int(t*100/int(size)),"%",end='\r')
-        socket.send(i.encode('utf8'))
-        t += 1
+    
+    number_send = int(size)/int(args.byte)
+    if str(number_send).split('.')[-1][0] != "0":
+        number_send = int(str(number_send).split('.')[0]) + 1
+    else :
+        number_send = int(str(number_send).split('.')[0])
+    print("Le fichier sera envoyé en :",number_send,"étape")
+
+    for i in range(number_send):
+        print('Transfert :',int(i*100/int(number_send)),"%",end='\r')
+        if len(hexa) > int(args.byte) :
+            data = hexa[:int(args.byte)]
+            hexa = hexa[int(args.byte):]
+        else :
+            data = hexa
+            print("DERNIER")
+        socket.send(data.encode('utf8'))
+        
     print('Name is :',str(args.file))
     for i in str(args.file):
         socket.send(i.encode('utf8'))
