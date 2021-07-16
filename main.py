@@ -10,6 +10,10 @@ parser.add_argument('-b','--byte',type=int,default=8500,help="The number of byte
 
 args = parser.parse_args()
 
+def progress_bar(long,c1,c2,nb):
+    oc_case = int(nb*long/100)
+    return str(c1*oc_case + c2*(long-oc_case))
+
 def server(args):
     import binascii
     import socket
@@ -52,7 +56,7 @@ def server(args):
     file = ""
     for i in range(number_send):
         reception = client.recv(int(args.byte)).decode('utf-8') # 131020 is the max of letter (with the encodage...) because 1048576 bytes is the max of bytes
-        print('Transfert :',int(i*100/int(number_send)),"%",end='\r')
+        print('Transfert :',int(i*100/int(number_send)),"% ",progress_bar(14,"■","□",int(i*100/int(number_send))),end='\r')
         if not reception :
             print('ERROR : The client has bugged')
             client.close()
@@ -113,7 +117,7 @@ def client(args):
     print("Le fichier sera envoyé en :",number_send,"étape")
 
     for i in range(number_send):
-        print('Transfert :',int(i*100/int(number_send)),"%",end='\r')
+        print('Transfert :',int(i*100/int(number_send)),"% ",progress_bar(14,"■","□",int(i*100/int(number_send))),end='\r')
         if len(hexa) > int(args.byte) :
             data = hexa[:int(args.byte)]
             hexa = hexa[int(args.byte):]
