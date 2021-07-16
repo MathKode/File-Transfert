@@ -3,10 +3,11 @@ import argparse
 parser = argparse.ArgumentParser(description='This code has been created to send a file between two PC on the local net')
 
 parser.add_argument('-r','--role',metavar="[S]erver or [C]lient",type=str,help='The role of the machine where the code is running')
-parser.add_argument('-i','--server',metavar='IP',type=str,help="The IP of the server machine")
+parser.add_argument('-i','--server',metavar='IP',default="192.168.1.1",type=str,help="The IP of the server machine")
 parser.add_argument('-f','--file',metavar='name',default=None,type=str,help="The name of the file (only if the role is client)")
 parser.add_argument('-p','--port',type=int,default=5746,help="The Port of the server (optionnal)")
 parser.add_argument('-b','--byte',type=int,default=8500,help="The number of byte send in one request (max 130020 but with bug, so we advice a max at 10000)")
+parser.add_argument('-t','--time',type=int,default=0.2,help="Time to sleep between 2 sending of data")
 
 args = parser.parse_args()
 
@@ -17,6 +18,7 @@ def progress_bar(long,c1,c2,nb):
 def server(args):
     import binascii
     import socket
+    import time
     import os
 
     socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -69,11 +71,22 @@ def server(args):
         if len(reception) != int(byte) and i != number_send-1:
             #print("PERTE DATA at ligne :",i,"AVEC UNE RECEPTION DE :",len(reception),len(reception) != byte)
             er.append(i)
+        time.sleep(args.time)
     print("Transfert END                             ")
+    
+
+    client.send("F".encode('utf-8'))
+    #Marqueur (attente de la fin de l'autre code)
+    while True :
+        reception = client.recv(1).decode('utf-8')
+        if reception == "F":
+            break
+
+
     print("Récupération des données (erreus)")
     
     print(er)
-    
+
     #Récupération des lignes mals envoyés (erreurs)
     for i in er:
         print(i)
@@ -89,6 +102,13 @@ def server(args):
                 #print("Erreur Save :",i)
     print('Envoi S')
     client.send("S".encode('utf-8'))
+
+    client.send("F".encode('utf-8'))
+    #Marqueur (attente de la fin de l'autre code)
+    while True :
+        reception = client.recv(1).decode('utf-8')
+        if reception == "F":
+            break
 
     fil = open('file.txt','w')
     fil.write("\n".join(file))
@@ -122,6 +142,7 @@ def server(args):
 def client(args):
     import binascii
     import socket
+    import time
     import random
     import os
     socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -156,9 +177,17 @@ def client(args):
             data = hexa
             print("DERNIER")
         hexa2.append(data)
-        
         socket.send(data.encode('utf8'))
+        time.sleep(args.time)
     
+    
+    while True :
+        reception = socket.recv(1).decode('utf-8')
+        if reception == "F":
+            break
+    socket.send("F".encode('utf-8'))
+
+
     file = open('hexa2.txt','w')
     file.write("\n".join(hexa2))
     file.close()
@@ -177,6 +206,12 @@ def client(args):
         b = int(ligne)
         print(b)
         socket.send(str(hexa2[b]).encode('utf-8'))
+    
+    while True :
+        reception = socket.recv(1).decode('utf-8')
+        if reception == "F":
+            break
+    socket.send("F".encode('utf-8'))
 
     #Name
     print('Name is :',str(args.file))
