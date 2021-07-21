@@ -72,8 +72,10 @@ python3 mainV2.py -r c -i IP_SERVER -f NAME_DU_FICHIER
 ````````
 ***WARNING : The file have to be in the local folder (in the directory where the code is stock)***
 
--
+___________________________________________________________________________________________
 
 **The Optional Argument**
 
-The **fourth** argument that we can meet is
+The **fourth** argument that we can meet is *-p* or *--port*. He is used to define the port of socket the connection. By default, it's on 5746.
+
+The **fifth** is *-b* or *--byte*. He is use to define the number of byte what we send in one socket (so he is high, so it's quick but the risk of error is taller)
