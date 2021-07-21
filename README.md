@@ -36,11 +36,23 @@ python3 mainV2.py --help
 
 **The oblygatory Arguments**
 
-The first is the *-r* or *-role*. He is served to defined the role of the machine which execute the code. The two role are :
+The **first** is the *-r* or *-role*. He is used to define the role of the machine which execute the code. The two role are :
 
 - s (to server)
 - c (to client)
 
 The SERVER machine is the machine which receives the data and the CLIENT is the one which sends the file.
 
+The **second** is the *-i* or *--ip**. He is used to define the ip address of the server machine. To find the ip address of the machine which execute the code of server, do this :
+
+> On windows
+`````
+ipconfig
+``````
+The result is :
+![](/img/Ipconfig)
+> On MacOs or linux
+`````
+ifconfig
+``````
 
