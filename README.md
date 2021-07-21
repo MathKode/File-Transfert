@@ -50,9 +50,30 @@ The **second** is the *-i* or *--ip**. He is used to define the ip address of th
 ipconfig
 ``````
 The result is :
-![](/img/Ipconfig)
+![](/Img/Ipconfig.png)
 > On MacOs or linux
 `````
 ifconfig
 ``````
+The result is :
+![](/Img/Ifconfig.png)
 
+At last, the **third** is the *-f* or *--file* (ONLY TO THE CLIENT). This argument is used to define the file which is going to send.
+
+**RECAP**
+
+The machine who receive the file (server) have to be configure with :
+`````
+python3 mainV2.py -r s -i IP_SERVER
+``````
+And the machine who send the file (client) :
+``````
+python3 mainV2.py -r c -i IP_SERVER -f NAME_DU_FICHIER
+````````
+***WARNING : The file have to be in the local folder (in the directory where the code is stock)***
+
+-
+
+**The Optional Argument**
+
+The **fourth** argument that we can meet is
