@@ -1,0 +1,5 @@
+WARNING : these codes are old code and only main.py works.
+If mainV1.py is here where as he don't work it's only because of I want to keep my code progression :-)
+
+ATTENTION : ces codes sont des vieux codes et seulement main.py fonctionne
+Si mainV1.py est dans ce fichier alors qu'il ne marche pas, c'est seulement parce que je veux garder la progression de mes codes :-)
