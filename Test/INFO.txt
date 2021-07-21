@@ -1,0 +1,3 @@
+WARNING : these codes are test codes (not real code)
+
+ATTENTION : ces codes sont des codes de test (pas le code réel)
