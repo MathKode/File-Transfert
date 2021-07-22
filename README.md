@@ -2,7 +2,11 @@
 
 # File-Transfert
 
-> English
+You want transfert files between two PC connected on the same local net but Internet connection is low, SO LOWWWW... You can now send the files without internet connection using my code (and it's faster :-)
+
+Vous souhaitez transférer des fichiers entre deux PC connectés sur le même réseau local mais la connexion Internet est faible, TRÈS FAIBLE... Vous pouvez maintenant envoyer les fichiers sans connexion Internet en utilisant mon code (et c'est plus rapide :-)
+
+# English
 
 This code has been created to send a file between two PC on the local net
 
@@ -137,7 +141,7 @@ This work exactly as the console program.
 
 ***WARNING : click on the start button of the server (PC which receive) before the start button of the client***
 
-> Français
+# Français
 
 Ce code a été crée pour échanger des fichiers entre deux PC qui sont connectés sur le même réseau local
 
