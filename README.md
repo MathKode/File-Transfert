@@ -79,3 +79,49 @@ ________________________________________________________________________________
 The **fourth** argument that we can meet is *-p* or *--port*. He is used to define the port of socket the connection. By default, it's on 5746.
 
 The **fifth** is *-b* or *--byte*. He is use to define the number of byte what we send in one socket (so he is high, so it's quick but the risk of error is taller)
+
+**Exemple**
+
+If I want to receive a file and that my ip is 192.168.1.27 :
+``````
+python3 mainV2.py -r s -i 192.168.1.27
+````````
+If I want to send the file xmas.png at the PC 192.168.1.27 :
+``````
+python3 mainV2.py -r c -i 192.168.1.27 -f xmas.png
+``````
+_____________________________________________________________
+If I want to do a connection on a personal port (1234) instead of 5746 :
+> Sever
+``````
+python3 mainV2.py -r s -i 192.168.1.27 -p 1234
+````````
+> Client
+``````
+python3 mainV2.py -r c -i 192.168.1.27 -p 1234 -f xmas.png
+``````
+_____________________________________________________________
+If I want to send the file 1 by 1 byte instead of 8500 by 8500 :
+> Sever (Same)
+``````
+python3 mainV2.py -r s -i 192.168.1.27
+````````
+> Client (Change)
+``````
+python3 mainV2.py -r c -i 192.168.1.27 -b 1 -f xmas.png
+``````
+
+**4) Issues**
+
+1) *ZeroDivisionError: division by zero*
+
+If you have this error, it's because the file what you want to send is so little. To resolve this, you have to change the value byte send.
+So, reduce *-b* value until this works :
+Try, on the client :
+``````
+python3 mainV2.py -r c -i 192.168.1.27 -b 500 -f xmas.png
+``````
+If it's still doesn't work, do :
+``````
+python3 mainV2.py -r c -i 192.168.1.27 -b 1 -f xmas.png
+``````
