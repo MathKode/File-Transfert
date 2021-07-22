@@ -128,7 +128,8 @@ def server(args):
     file = open(name_file,'wb')
     file.write(hexa)
     file.close()
-
+    
+    print("--- END ---                           ")
 
     client.close()
     socket.close()
@@ -156,6 +157,10 @@ def client(args):
         -> n
         -> j
     
+    // Verif que vr byte < nb caractères hexa
+    Car si (exemple) byte = 8500 et que len(hexa) = 400 : Ca bug
+    On modifie donc byte pour que byte = 399 (byte > len(hexa))
+
     // La méthode de calcul du nombre d'envoie est très simple. Elle conciste a
     calculer le nombre de SEND que l'on va devoir faire pour transmettre le fichier
     20 000 caractères hexadécimals et --byte  = 8 500
@@ -207,6 +212,13 @@ def client(args):
     file.close()
     hexa = str(binascii.hexlify(content))[2:-1]
 
+    #Verif que byte est inférieur a len(hexa)
+    if int(args.byte) > len(hexa):
+        print("Little File, modification of byte")
+        a = args.byte
+        args.byte = len(hexa) - 2
+        print(a, "->", args.byte)
+    
     #Calcul du nombre d'envoie
     nb = len(hexa) / int(args.byte)
     if str(nb).split('.')[-1] == "0" :
@@ -238,15 +250,21 @@ def client(args):
         socket.send(i.encode('utf-8'))
     socket.send(b"S")
 
-    print(len(hexa_list[0]))
+    print("Verif byte :",len(hexa_list[0]))
+    
     #Envoie du fichier
+    t = 0
     for i in hexa_list:
         socket.sendall(str(i).encode('utf-8'))
+        print('Transfert :',int(t*100/(int(send_nb)-1)),"% ",progress_bar(14,"■","□",int(t*100/int(send_nb-1))),end='\r')
+        t += 1
+    print("Waiting 10 second ...                              ",end="\r")
     time.sleep(10)
     if len(hexa_list[-1]) == 1:
         socket.send(b"SS")
     else :
         socket.send(b"S")
+    print("--- END ---                ")
 
 def main(args):
     if args.role.lower() == "s":
