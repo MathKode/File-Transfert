@@ -1,3 +1,5 @@
+*INFO : Ce readme est écrit en Anglais et en français. This readme is written in english and in french
+
 # File-Transfert
 
 > English
